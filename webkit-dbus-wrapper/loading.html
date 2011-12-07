@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en-US" xml:lang="en-US">
+<head>
+<style type="text/css">
+body
+{
+	background-image: url(graphics/page-background.png);
+	background-repeat: repeat-x;
+	background-color: #f1f5f1;
+	font: 12px/18px 'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif !important;
+	height: 100%;
+
+}
+
+@font-face
+{  
+  font-family: Syncopate;  
+  src: url(graphics/Syncopate-Regular.ttf) format("truetype");  
+}
+ 
+#loading
+{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	background-color: rgba(0,0,0,0.4);
+	padding: 6px;
+	
+	font-family: Syncopate;
+	color: white;
+	font-size: 15px;
+	text-shadow: black 0px 0px 4px;	
+	
+	vertical-align: middle;
+	padding-top: 9px;
+}
+
+#spinner
+{
+	vertical-align: middle;
+	width: 20px;
+	height: 20px;
+	display: inline-block;
+	
+	background-image: url(graphics/spinner.png);
+	background-size: 100% 100%;
+	-webkit-animation-name: spinnerRotate;
+	-webkit-animation-duration: 2s;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-timing-function: linear;
+}
+
+@-webkit-keyframes spinnerRotate {
+	from {
+		-webkit-transform:rotate(0deg);
+	}
+	to {
+		-webkit-transform:rotate(360deg);
+	}
+}
+</style>
+</head>
+<body>
+	<div id="loading">
+		<div id="spinner"></div>
+		Loading
+	</div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<div id="manipulate-partitions-buttons">
+	<a href="#add"><img id="add-partition" src="graphics/plus.png" class="inactive freespace-selected button modify-action" width=32 height=32 title="Add partition"></img></a>
+	<a href="#remove"><img id="remove-partition" src="graphics/minus.png" width=32 height=32 class="inactive partition-selected button modify-action" title="Delete partition"></img></a>
+	<div style="display: inline-block; width: 32px;"></div>
+	<a href="#format"><img id="format-partition" src="graphics/refresh.png" width=32 height=32 class="inactive partition-selected button modify-action" title="Format partition"></img></a>
+	<a href="#resize"><img id="resize-partition" src="graphics/move.png" width=32 height=32 class="inactive partition-selected button modify-action" title="Resize/move partition"></img></a>
+	<div style="display: inline-block; width: 32px;"></div>
+	<img id="set-partition" src="graphics/star.png" width=32 height=32 class="inactive partition-selected button" title="Set as Linvo partition"></img>
+
+</div>
+
+<div id="manipulation-interface">
+	<div id="storage-devices">
+	</div>
+
+	<div id="removable-storage-devices">
+	</div>
+</div>
+
+<div id="partitioner-sidebar">
+	<h3>Partition information:</h3>
+	<h4>Label:</h4><span class="IdLabel"></span>
+	<h4>Type:</h4><span class="IdType"></span>
+	<h4>UUID:</h4><span class="IdUuid"></span>
+	<h4>Size:</h4><span class="PartitionSize"></span>
+</div>
+
+
+<div id="manipulate-partitions-forms">
+	<!-- the fancybox forms -->
+	<form id="resize">
+		<input id="offset-slider" type="range"  min="1" max="200" value="100"/>
+		<input id="size-slider" type="range" min=1 max=200 value=0/>
+	</form>
+</div>

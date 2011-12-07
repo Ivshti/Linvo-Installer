@@ -1,0 +1,53 @@
+#	> maybe use pre-processed (JSONP) and embedded (as <script> elements) data for the installer for the time-zones and languages;
+		> a webkit protocol handler exec:// can be created (or something like this) to allow us to retrieve data in JSON objects from the system
+
+#> translations - if the DOM tree of the WebKit page can be modified through the C code, gettext can be used
+#> partitioner d-bus service
+> complete the fucking interface, put it in a different folder, make it internet-independant
+> partitioner GUI
+#> configuration framework ; read (from existing install) and write on new one;
+#> fork off the webkit-dbus wrapper
+
+things that need importing as a JSON object:
+	#* installer modules 
+	#* time zone info (could use static JSON generated on compile time)
+	#* languages info (could use static JSON generated on compile time)
+	#* Linvo applications
+	#* default language -- navigator.language
+	
+DEFINE STRUCTURE!!
+
+define module templates
+.onload()
+.apply()
+.isapplied
+.sidebar_item
+
+module structure can be further improved; every module folder can have a file "on_homepage", "page" (both HTML) which are included after the call of the function LoadModules()
+an array will be passed to that function with the order in which the modules should be included, and that should be executed by a seperete script called "load_modules.js"
+
+
+AN INTERESTING IDEA: IF REGISTERED TO THE WEBSITE, UPLOAD INFO ABOUT WHICH MODE HAS THE USER USED (AUTO VS MANUAL)
+
+apps, language, partitions, users, timezone, system 
+
+(apps,users)
+users -> Array() of
+	{
+		name:
+		fullname:
+		uid:
+		guid:
+		groups:
+		apps: 
+	}
+	
+(language,timezone)
+	{
+		language:
+		timezone:
+	}
+
+(system)
+
+http://www.dhtmlx.com/index.shtml ?

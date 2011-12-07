@@ -1,0 +1,251 @@
+
+
+Wed Nov 30 04:38:07 2011
+Command line: TestDisk
+
+TestDisk 6.12, Data Recovery Utility, May 2011
+Christophe GRENIER <grenier@cgsecurity.org>
+http://www.cgsecurity.org
+OS: Linux, kernel 2.6.36-zen1 (#1 ZEN SMP Thu Dec 9 19:58:41 EET 2010) i686
+Compiler: GCC 4.5
+Compilation date: 2011-06-08T17:21:57
+ext2fs lib: 1.41.12, ntfs lib: libntfs-3g, reiserfs lib: none, ewf lib: 20100226
+/dev/sda: LBA, HPA, LBA48, DCO support
+/dev/sda: size       1953525168 sectors
+/dev/sda: user_max   1953525168 sectors
+/dev/sda: native_max 1953525168 sectors
+/dev/sda: dco        1953525168 sectors
+/dev/sdb: LBA, HPA, LBA48, DCO support
+/dev/sdb: size       160836480 sectors
+/dev/sdb: user_max   160836480 sectors
+/dev/sdb: native_max 160836480 sectors
+/dev/sdb: dco        160836480 sectors
+Warning: can't get size for Disk /dev/mapper/control - 0 B - CHS 1 1 1, sector size=512
+Hard disk list
+Disk /dev/sda - 1000 GB / 931 GiB - CHS 121601 255 63, sector size=512 - ATA ST31000520AS
+Disk /dev/sdb - 82 GB / 76 GiB - CHS 10011 255 63, sector size=512 - ATA ExcelStor Techno
+Disk /dev/sdc - 4007 MB / 3822 MiB - CHS 1018 124 62, sector size=512 -  USB Device
+
+Partition table type (auto): None
+Disk /dev/sdc - 4007 MB / 3822 MiB -  USB Device
+Partition table type: Sun
+
+Analyse Disk /dev/sdc - 4007 MB / 3822 MiB - CHS 1018 124 62
+Current partition structure:
+Bad SUN partition
+
+search_part()
+Disk /dev/sdc - 4007 MB / 3822 MiB - CHS 1018 124 62
+Search for partition aborted
+
+Results
+
+interface_write()
+ 2 P Whole disk               0   0  1  1018  17 18    7827456
+simulate write!
+Partition table type (auto): None
+Disk /dev/sdc - 4007 MB / 3822 MiB -  USB Device
+Partition table type: None
+
+Analyse Disk /dev/sdc - 4007 MB / 3822 MiB - CHS 1018 124 62
+FAT32 at 0/0/7
+FAT1 : 32-1674
+FAT2 : 1675-3317
+start_rootdir : 3318 root cluster : 2
+Data : 3318-1685501
+sectors : 1685504
+cluster_size : 8
+no_of_cluster : 210273 (2 - 210274)
+fat_length 1643 calculated 1643
+FAT differs, FAT sectors=0-16/1643
+heads/cylinder 64 (FAT) != 124 (HD)
+sect/track 32 (FAT) != 62 (HD)
+set_FAT_info: name from BS used
+
+FAT32 at 0/0/7
+
+
+test_FAT()
+   P FAT32                    0   0  1  1018  17 18    7827456
+     FAT found using backup sector!, 4007 MB / 3822 MiB
+sector_size  1766
+cluster_size 87
+reserved     49294
+fats         251
+dir_entries  49148
+sectors      1536
+media        B9
+fat_length   256
+secs_track   42483
+heads        8170
+hidden       1375731718
+total_sect   3141645394
+fat32_length 3375453610
+flags        F630
+version      249.205
+root_cluster 2165535251
+info_sector  22011
+backup_boot  30122
+free_count   27606
+next_free    182668
+Current partition structure:
+   P FAT32                    0   0  1  1018  17 18    7827456
+
+search_part()
+Disk /dev/sdc - 4007 MB / 3822 MiB - CHS 1018 124 62
+FAT32 at 0/0/7
+FAT1 : 32-1674
+FAT2 : 1675-3317
+start_rootdir : 3318 root cluster : 2
+Data : 3318-1685501
+sectors : 1685504
+cluster_size : 8
+no_of_cluster : 210273 (2 - 210274)
+fat_length 1643 calculated 1643
+FAT differs, FAT sectors=0-16/1643
+heads/cylinder 64 (FAT) != 124 (HD)
+sect/track 32 (FAT) != 62 (HD)
+set_FAT_info: name from BS used
+
+FAT32 at 0/0/7
+     FAT32                    0   0  7   219  29 40    1685504
+     FAT32, 862 MB / 823 MiB
+Search for partition aborted
+
+Results
+   P FAT32                    0   0  7   219  29 40    1685504
+     FAT32, 862 MB / 823 MiB
+Change partition type:
+   P FAT32                    0   0  7   219  29 40    1685504
+     FAT32, 862 MB / 823 MiB
+
+interface_write()
+   P FAT32                    0   0  7   219  29 40    1685504
+ 
+Write isn't available because the partition table type "None" has been selected.
+
+search_part()
+Disk /dev/sdc - 4007 MB / 3822 MiB - CHS 1018 124 62
+FAT32 at 0/0/7
+FAT1 : 32-1674
+FAT2 : 1675-3317
+start_rootdir : 3318 root cluster : 2
+Data : 3318-1685501
+sectors : 1685504
+cluster_size : 8
+no_of_cluster : 210273 (2 - 210274)
+fat_length 1643 calculated 1643
+FAT differs, FAT sectors=0-16/1643
+heads/cylinder 64 (FAT) != 124 (HD)
+sect/track 32 (FAT) != 62 (HD)
+set_FAT_info: name from BS used
+
+FAT32 at 0/0/7
+     FAT32                    0   0  7   219  29 40    1685504
+     FAT32, 862 MB / 823 MiB
+Search for partition aborted
+
+Results
+   P FAT32                    0   0  7   219  29 40    1685504
+     FAT32, 862 MB / 823 MiB
+
+interface_write()
+   P FAT32                    0   0  7   219  29 40    1685504
+ 
+Write isn't available because the partition table type "None" has been selected.
+Partition table type (auto): None
+Disk /dev/sdc - 4007 MB / 3822 MiB -  USB Device
+Partition table type: Intel
+
+Analyse Disk /dev/sdc - 4007 MB / 3822 MiB - CHS 1018 124 62
+Current partition structure:
+No partition is bootable
+Ask the user for vista mode
+Computes LBA from CHS for Disk /dev/sdc - 4011 MB / 3825 MiB - CHS 1019 124 62
+Allow partial last cylinder : Yes
+search_vista_part: 1
+
+search_part()
+Disk /dev/sdc - 4011 MB / 3825 MiB - CHS 1019 124 62
+
+Results
+
+interface_write()
+ 
+No partition found or selected for recovery
+
+search_part()
+Disk /dev/sdc - 4011 MB / 3825 MiB - CHS 1019 124 62
+FAT32 at 0/0/7
+FAT1 : 32-1674
+FAT2 : 1675-3317
+start_rootdir : 3318 root cluster : 2
+Data : 3318-1685501
+sectors : 1685504
+cluster_size : 8
+no_of_cluster : 210273 (2 - 210274)
+fat_length 1643 calculated 1643
+FAT differs, FAT sectors=0-16/1643
+heads/cylinder 64 (FAT) != 124 (HD)
+sect/track 32 (FAT) != 62 (HD)
+set_FAT_info: name from BS used
+
+FAT32 at 0/0/7
+     FAT32                    0   0  1   219  29 34    1685504
+     FAT found using backup sector!, 862 MB / 823 MiB
+Partition not added.
+Search for partition aborted
+
+Results
+
+interface_write()
+ 
+No partition found or selected for recovery
+simulate write!
+
+write_mbr_i386: starting...
+write_all_log_i386: starting...
+No extended partition
+
+Analyse Disk /dev/sdc - 4011 MB / 3825 MiB - CHS 1019 124 62
+Current partition structure:
+No partition is bootable
+Ask the user for vista mode
+Allow partial last cylinder : Yes
+search_vista_part: 1
+
+search_part()
+Disk /dev/sdc - 4011 MB / 3825 MiB - CHS 1019 124 62
+
+Results
+
+interface_write()
+ 
+No partition found or selected for recovery
+
+search_part()
+Disk /dev/sdc - 4011 MB / 3825 MiB - CHS 1019 124 62
+FAT32 at 0/0/7
+FAT1 : 32-1674
+FAT2 : 1675-3317
+start_rootdir : 3318 root cluster : 2
+Data : 3318-1685501
+sectors : 1685504
+cluster_size : 8
+no_of_cluster : 210273 (2 - 210274)
+fat_length 1643 calculated 1643
+FAT differs, FAT sectors=0-16/1643
+heads/cylinder 64 (FAT) != 124 (HD)
+sect/track 32 (FAT) != 62 (HD)
+set_FAT_info: name from BS used
+
+FAT32 at 0/0/7
+     FAT32                    0   0  1   219  29 34    1685504
+     FAT found using backup sector!, 862 MB / 823 MiB
+Partition not added.
+
+Results
+
+interface_write()
+ 
+No partition found or selected for recovery

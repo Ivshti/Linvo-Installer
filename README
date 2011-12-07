@@ -1,3 +1,11 @@
-webkit-dbus-wrapper --width=755 --height=552 --resizeable=0 --title="Install/Upgrade Linvo" '../linvo-installer-gui/index.html' --app-id="LinvoInstaller" --translate-dom=0
+This the installer of the Linvo project. The interface (linvo-installer-gui) is written in HTML5 and JavaScript and it's used through a component called "webkit-dbus-wrapper". It starts
+an HTML file as if it is started in a browser but adds a dbus object to the global JavaScript objects in order to allow the code to communicate with the system through D-Bus.
 
+The GUI uses linvo-installer-core (Vala, C) to install the Linvo system - a D-Bus service that converts a Linvo data directory into an installed system. Other components it uses through D-Bus are UDisks and
+the notification system (libnotify).
+
+Command to start:
+cd webkit-dbus-wrapper/ ; webkit-dbus-wrapper --width=755 --height=552 --resizeable=0 --title="Install/Upgrade Linvo" '../linvo-installer-gui/index.html' --app-id="LinvoInstaller" --translate-dom=0
+
+Command to compile webkit-dbus-wrapper: 
 ( cd webkit-dbus-wrapper/ ; gcc -o webkit-dbus-wrapper webkit-dbus-wrapper.c $(pkg-config --cflags  --libs dbus-glib-1 webkit-1.0 unique-1.0 jscorebus))

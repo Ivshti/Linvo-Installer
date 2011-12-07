@@ -1,0 +1,1 @@
+c_exec = if [ $ROOT/etc/slapt-get/slapt-getrc.standart -nt $ROOT/etc/slapt-get/slapt-getrc ]; then cp /etc/slapt-get/slapt-getrc.standart $ROOT/etc/slapt-get/slapt-getrc; fi; linvo-chroot /$ROOT "/usr/sbin/slapt-get --update" 

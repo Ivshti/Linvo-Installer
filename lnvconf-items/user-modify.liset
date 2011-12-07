@@ -1,0 +1,1 @@
+c_exec = chroot "$ROOT" /usr/sbin/usermod -G "$Groups" -d "$Home" -p "$Password" "$Username"
