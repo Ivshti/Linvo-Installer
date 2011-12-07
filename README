@@ -1,0 +1,3 @@
+webkit-dbus-wrapper --width=755 --height=552 --resizeable=0 --title="Install/Upgrade Linvo" '../linvo-installer-gui/index.html' --app-id="LinvoInstaller" --translate-dom=0
+
+( cd webkit-dbus-wrapper/ ; gcc -o webkit-dbus-wrapper webkit-dbus-wrapper.c $(pkg-config --cflags  --libs dbus-glib-1 webkit-1.0 unique-1.0 jscorebus))
