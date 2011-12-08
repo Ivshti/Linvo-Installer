@@ -309,7 +309,7 @@ function FillInterface(elem)
 		}
 	});
 
-	/* Clicking on free space causes the new partition buttom to be activated*/
+	/* Clicking on free space causes the new partition button to be activated*/
 	$(".freespace").live("click",function()
 	{
 		$(".partition-selected").addClass("inactive");
@@ -365,18 +365,33 @@ function FillInterface(elem)
 		});
 	});
 	
-	$("#format-partition").click(function()
-	{
-		//$(".selected").data("device-object").FilesystemCreate();
-	});
 	
-	$("#resize-partition").click(function()
-	{
-	});
-	
-	/* Action forms */
+	/* Action forms: bring up fancybox when a button to manipulate a partition is clicked */
 	$("#manipulate-partitions-buttons > a").fancybox();
 	
+	/* What to do when "Apply" is clicked in an action form */
+	$("#manipulate-partitions-forms > form").submit(function()
+	{
+		$.fancybox.close();
+		
+		var operation_id = $(this).attr("id");
+		var selected_partition = $(".selected");
+		var selected_disk = selected_partition.parent();
+		
+		switch(operation_id)
+		{
+			case "remove":
+			{
+				
+			}
+			break;
+		}
+		
+		/* Important to prevent refreshing the page */
+		return false;
+	});
+	
+	/* Set the partition as a special Linvo partition */
 	$("#set-partition").click(function()
 	{
 		var device = $(".selected").data("device-object");
@@ -387,21 +402,12 @@ function FillInterface(elem)
 		$(".selected").addClass("set-for-linvo");
 	});
 
-	/* Keep track of actions and support undo; probably redo later on */
-	$(".modify-action").click(function()
-	{
-	});
-	
+	/* Undo/redo operations */
 	$("#undo-button").click(function()
 	{
 	});
 	
 	$("#redo-button").click(function()
-	{
-	});
-	
-	/* Start the processes in the queue */
-	$("#apply-button").click(function()
 	{
 	});
 		

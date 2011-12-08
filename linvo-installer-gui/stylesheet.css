@@ -361,6 +361,23 @@ textarea, input, button
 	height: 50px;
 }
 
+/* Time zone */
+#TimeZoneFrame
+{
+	border: none;
+    height: 279px;
+    width: 360px;
+
+    float: left;
+
+    overflow: hidden;
+    
+    padding: 0px;
+	margin-right: 10px;
+   
+}
+
+/* Menu lists */
 .menulist-entry
 {
 	padding-top: 5px;
@@ -369,6 +386,8 @@ textarea, input, button
 {
 	background-color: rgba(0,0,0,0.1);
 }
+
+
 
 /* Tooltip */
 .tooltip {

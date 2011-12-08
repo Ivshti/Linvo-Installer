@@ -3,6 +3,19 @@
  * @copyright 2011 Brion Vibber <brion@pobox.com>
  */
 
+html
+{
+	width: 360px;
+	height: 279px;
+	overflow: hidden;
+}
+
+body
+{	
+	-webkit-transform: scale(0.5);
+    -webkit-transform-origin: 0 0;
+}
+
 #mw-tzpicker {
 	 width: 720px;
 	 height: 558px;
