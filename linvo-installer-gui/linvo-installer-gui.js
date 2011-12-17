@@ -3,8 +3,6 @@ TODO: easy rebranding, external string configuration, import/export from a dbus 
 
 GUI: 
 #> sidebar, load data
-> on the overlay background, don't snap the highlighter to the other end
-> zoom/unzoom on time zones; load timezones properly
 #> helpbar
 > fill helpbar somehow
 	#>disable text selection?

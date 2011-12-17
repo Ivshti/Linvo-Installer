@@ -8,7 +8,7 @@
  * and if a partition table on a disk is modified, call a re-read which re-builds the entire disk
  * #> first implement the polling of information (taken space)
  * > upon an empty device, offer "create a partition table"?
- * 
+ * #> utility setActive for GUI elements (would also disable events)
  * #> Add a "TryAddFreeSpace(start,end)" function that would add free space between start and end if needed; in order to apply this to the space in the end of a drive, we need to get the count of it's sectors
  * > make extended partitions transparent (partitioner.js to handle them - adding/removing, automatic adding if more than *limit* partitions)
  */
@@ -34,7 +34,9 @@ var PartitionSlavesElements = new Object();
 var PartitionInterfaces = new Array();
 var PartitionInstallationInfo = new Array();
 
-var PartitionModifyActions = new Array();
+/* An array describing the previous/next states of a slave; used for undo/redo and queuing actions */
+var PartitionSlavesStates = new Array();
+var currentState = -1; /* begin at -1 because this points to an element of an array, and when the first element is pushed it must become 0 */
 
 function FillInterface(elem)
 {	
@@ -47,7 +49,7 @@ function FillInterface(elem)
 	{
 		/* Create a DOM element for a slave and store it in an object */
 		var slave_elem = $("#storage-device-template").clone().attr("id",null)
-			.data("device-object",device)
+			.pData("device-object",device)
 			.appendTo(elem.find(device.Properties.DeviceIsRemovable ? "#removable-storage-devices" : "#storage-devices"));
 		
 		slave_elem.find(".title").text(
@@ -77,7 +79,8 @@ function FillInterface(elem)
 		/* Now go through the partitions and add "grow" (visually) the partitions that are too small for the user to see */
 		partition_elems.each(function()
 		{
-			var width_percentage = $(this).width();
+			var width_percentage = $(this).widthPercentage();
+
 			if (width_percentage < partition_min_size)
 			{
 				width_percentage = partition_min_size;
@@ -92,7 +95,7 @@ function FillInterface(elem)
 			var coefficient = 100/sum_percentage;
 			partition_elems.each(function()
 			{
-				 $(this).width(($(this).width()*coefficient)+"%"); 
+				 $(this).width(($(this).widthPercentage()*coefficient)+"%"); 
 			});
 		}
 	
@@ -102,6 +105,7 @@ function FillInterface(elem)
 	 * Add a free space "partition" entry if there
 	 * is free space between start and end
 	 */
+	 function FreeSpaceElem() { return $("#partition-template").clone().attr("id",null).addClass("freespace"); }
 	function TryAddFreeSpace(start, end, slave, slave_elem)
 	{
 		/* WARNING/TODO
@@ -110,11 +114,12 @@ function FillInterface(elem)
 		 */
 		if (start != end && end-start>(63*slave.Properties.DeviceBlockSize))
 		{
-			$("#partition-template").clone().attr("id",null).addClass("freespace")
+			var free_space_elem = FreeSpaceElem()
 				.width(((end-start)/slave.Properties.DeviceSize * 100)+"%")
-				.data("start",start)
-				.data("end",end)
-				.appendTo(slave_elem);
+				.pData("start",start)
+				.pData("end",end);
+			
+			free_space_elem.appendTo(slave_elem);
 		}
 	}
 	/* 
@@ -152,8 +157,12 @@ function FillInterface(elem)
 		partition_elem.css("background-color", colormap[partition.Properties.IdType]);
 		partition_elem.find(".size").text(UserFriendlySize(size));
 		partition_elem.find(".type").text(partition.Properties.IdType.toUpperCase());
-		partition_elem.data("device-object",partition);
+		partition_elem.pData("device-object",partition);
 		partition_elem.attr("data-device-path",partition.device_path); /* apparently, data- does not work the same as data(), so I can't use CSS selectors unless this is an attribute and not data */
+		
+		partition_elem
+			.pData("start",start)
+			.pData("end",start+size);
 		
 		/* TODO: os-prober (started by RetrieveInstallationInfo) mounts all the partitions, and we do the same;
 		 * maybe we can pass only the path to the device to RetrieveInstallationInfo and get os-prober to leave all the partitions mounted */
@@ -233,20 +242,38 @@ function FillInterface(elem)
 	 * when a partition table is added the code waits for all it's partitions (using PartitionTableCount)
 	 * to also be added before calling FinishPartitionTable
 	 * 
+	 * on each event, we check if the queue is satisfied
+	 * 
 	 * */
 	var to_add = 0;
 	var partitions_queue = Array();
 	var slaves_queue = Array();
 	//udisks.DeviceAdded.async = false;
+	
+	function CheckQueueSatisfied()
+	{
+		if (to_add == 0) /* The queue is satisfied now */
+		{
+			$.each(partitions_queue, AddPartition);
+			$.each(slaves_queue, FinishPartitionTable);
+			
+			partitions_queue = Array();
+			slaves_queue = Array();
+		}
+	}
+	
 	udisks.DeviceAdded.onemit = function(device_path)
 	{
 		device = Device(device_path);
+		
 		if (device.Properties.DeviceIsPartitionTable)
 		{
 			AddPartitionTable(device, device_path);
 			
 			slaves_queue.push(PartitionSlavesElements[device_path]);
 			to_add += device.Properties.PartitionTableCount;
+			
+			CheckQueueSatisfied();
 		}
 		else if (device.Properties.DeviceIsPartition)
 		{
@@ -256,22 +283,19 @@ function FillInterface(elem)
 				to_add--;
 				partitions_queue.push(device);
 				
-				if (to_add==0) /* The queue is satisfied now */
-				{
-					$.each(partitions_queue, AddPartition);
-					$.each(slaves_queue, FinishPartitionTable);
-					
-					partitions_queue = Array();
-					slaves_queue = Array();
-				}
+				CheckQueueSatisfied();
 			}
 			else /* If it's null, then the partition addition was unexpected, meaning it did not occur because a partition table was added; e.g. newly created partition */
-				AddPartition(null,device);
+				AddPartition(null,device); /* THE UNEXPECTED EVENT HANDLER WILL GO HERE */
 		}
 	}
 	udisks.DeviceAdded.enabled = true;
 	
-	/* Add partitions to the GUI */
+	/* 
+	 * Add partitions to the GUI 
+	 * 
+	 * */
+	 
 	/* Begin by sorting by order on the disk */
 	PartitionInterfaces.sort(function(part_a,part_b)
 	{
@@ -284,24 +308,20 @@ function FillInterface(elem)
 	/* Iterate through the slaves and to some final preparations */
 	$.each(PartitionSlavesElements, FinishPartitionTable);
 	
-	/* Set-up GUI stuff */
+	/* 
+	 * Set-up GUI stuff 
+	 * */
 
-	/*
-	 * TODO: the stupid interface
-	 * 
-	 */
-	 
-	// Clicking on a partition shows information about it
+	/* Clicking on a partition shows information about it and updates the buttons */
 	$(".partition").live("click",function()
 	{
-		$(".partition-selected").removeClass("inactive");
-		$(".freespace-selected").addClass("inactive");
+		$(".partition-selected").setActive(true);
+		$(".freespace-selected").setActive(false);
 
-		//$(this).addClass("selected").siblings().removeClass("selected");
 		$(".partition").removeClass("selected");
 		$(this).addClass("selected");
 		
-		var device = $(this).data("device-object");
+		var device = $(this).pData("device-object");
 		if (device)
 		{
 			/* TODO: clean element before welding */
@@ -309,64 +329,66 @@ function FillInterface(elem)
 		}
 	});
 
-	/* Clicking on free space causes the new partition button to be activated*/
+	/* Clicking on free space causes the new partition button to be activated */
 	$(".freespace").live("click",function()
 	{
-		$(".partition-selected").addClass("inactive");
-		$(".freespace-selected").removeClass("inactive");
+		$(".partition-selected").setActive(false);
+		$(".freespace-selected").setActive(true);
 	});
 	
-	/* Action buttons */
-	$("#add-partition").click(function()
+	/* Set the partition as a special Linvo partition */
+	$("#set-partition").click(function()
 	{
-		function DefaultPartitionType()
-		{
-			//if (type=="mbr")
-				return 0x07;
-		}
+		var device = $(".selected").pData("device-object");
+		//if (device.) Check free space
 		
-		function DefaultFlags()
-		{
-			return [];
-		}
-		
-		var selected_elem = $(".selected"); 
-		var slave = $(".selected").parent().parent().data("device-object");
-		var start = selected_elem.data("start");
-		var end = selected_elem.data("end");
-		var label = "test"; //temp
+		install_point = device.Properties.DeviceMountPaths[0];
 
-		slave.PartitionCreate.async = false;
-		slave.PartitionCreate.onreply = function(path){console.log(path);};
-		slave.PartitionCreate.onerror = function(err,inf){console.log(err+" "+inf);};
-		slave.PartitionCreate(
-			start,
-			end-start,
-			"0x07",
-			label,
-			[],
-			[],
-			"ext3",
-			[]
-		);
-		
-		/* TODO: properly remove freespace 
-		 * NOTE: if udisks fires events even if partitions are modified from outside (e.g. resize2fs) the reflections on the table could be handled entirely by the deviceremove/deviceadd code instead of this
-		 * NOPE: i need applying to happen by clicking "apply" rather than directly
-		 * */
+		$(".partition").removeClass("set-for-linvo");
+		$(".selected").addClass("set-for-linvo");
 	});
+
+
+	/* 
+	 * Start of the part of the interface responsible for actual modification of the
+	 * partitions and the undo/redo (state) framework
+	 * 
+	 * */
 	
-	$("#remove-partition").click(function()
+	/* Undo/redo operations */	
+	function StateObject(selected_slave_elem) /* Get an object describing a state of an element */
 	{
-		/* TODO: unmount first, add/merge freespace */
-		PartitionModifyActions.push(function()
-		{
-			$(".selected").data("device-object").PartitionDelete([]); 
-		});
-	});
+		return {
+			elem: selected_slave_elem, 
+			state: selected_slave_elem.contents().removeClass("selected").clone()
+		};
+	}
 	
+	function SwitchState(SlaveState) /* Switch the state of an element to a state object */
+	{ 
+		SlaveState.elem.empty().append(SlaveState.state);
+		UpdateStateButtons();
+	}; 
 	
-	/* Action forms: bring up fancybox when a button to manipulate a partition is clicked */
+	function UpdateStateButtons()
+	{
+		$("#redo-button").setActive(!(currentState == PartitionSlavesStates.length-1));
+		$("#undo-button").setActive(!(currentState == -1));
+	}
+	
+	$("#undo-button").click(function() { SwitchState(PartitionSlavesStates[currentState--].before); });
+	$("#redo-button").click(function() { SwitchState(PartitionSlavesStates[++currentState].after); });
+	/* End of undo/redo */
+	
+	/* Utility function to get a collection of a partition plus adjacent freespaces, if any */
+	function GetPartitionWithFreespaces(partition_elem) 
+	{
+		return partition_elem.prev().filter(".freespace")
+			.add(partition_elem) /* It's important that's in the middle so we keep the original order */
+			.add(partition_elem.next().filter(".freespace"));
+	}
+	
+	/* Define that upon click of a button, we bring up an action form */
 	$("#manipulate-partitions-buttons > a").fancybox();
 	
 	/* What to do when "Apply" is clicked in an action form */
@@ -376,39 +398,68 @@ function FillInterface(elem)
 		
 		var operation_id = $(this).attr("id");
 		var selected_partition = $(".selected");
-		var selected_disk = selected_partition.parent();
+		var selected_slave_elem = selected_partition.parent();
+			
+		/* we have undone previous actions and now modify the table, meaning that there are already entries with n>currentState in the states array; clean them */
+		if (PartitionSlavesStates.length-1 > currentState)
+		{
+			PartitionSlavesStates = PartitionSlavesStates.slice(0,currentState+1);
+			UpdateStateButtons();
+		}
 		
+		/* Save the state before the modification */
+		var state_before = StateObject(selected_slave_elem);
+		
+		/* Modify the given slave */
 		switch(operation_id)
 		{
+			case "add":
+			{
+				
+			}
+			break;
+			
 			case "remove":
+			{
+				var selected_partitions = GetPartitionWithFreespaces(selected_partition);
+				
+				selected_partitions.replaceWith(FreeSpaceElem()
+					.pData("start", selected_partitions.first().pData("start"))
+					.pData("end",selected_partitions.last().pData("end"))
+					.width(selected_partitions.widthPercentage()+"%")
+				);
+			}
+			break;
+			
+			case "format":
+			{
+				
+			}
+			break;
+		
+			case "resize":
 			{
 				
 			}
 			break;
 		}
+	
+		/* We must save the state by saving the contents, not by cloning the element, because when restoring
+		 * it, if we replace it with a clone, the references used in the PartitionSlavesElements will fail 
+		 * and we will break UDisks hotplugging */
+		PartitionSlavesStates.push({before: state_before, after: StateObject(selected_slave_elem), operation: 
+				{
+					type: operation_id,
+					info: $(this).serializeArray(),
+					dbus_interface: selected_partition.pData("device-object")
+				}
+		});/* Push the already modified state */
+		
+		currentState++; /* Notify that we've incremented the current state */
+		UpdateStateButtons();
 		
 		/* Important to prevent refreshing the page */
 		return false;
-	});
-	
-	/* Set the partition as a special Linvo partition */
-	$("#set-partition").click(function()
-	{
-		var device = $(".selected").data("device-object");
-		//if (device.) Check free space
-		
-		install_point = device.Properties.DeviceMountPaths[0];
-		$(".partition").removeClass("set-for-linvo");
-		$(".selected").addClass("set-for-linvo");
-	});
-
-	/* Undo/redo operations */
-	$("#undo-button").click(function()
-	{
-	});
-	
-	$("#redo-button").click(function()
-	{
 	});
 		
 	/* Just a test */
@@ -418,9 +469,9 @@ function FillInterface(elem)
 
 function CalculateAuto(disk_elem, required_space)
 {
-	disk_elem.children().each(function()
+	disk_elem.find(".partitions").children().each(function()
 	{
-		//console.log("slot behind: "+partition_id);
+	//	console.log("slot behind: "+$(this).pData("start"));
 	
 	});
 }
@@ -438,3 +489,41 @@ InstallerModules.partitions =
 	page_template: "modules/partitioner.html",
 	on_automatic_enabled: function() { },
 };
+
+/* OBSOLETE CODE 
+	$("#add-partition").click(function()
+	{
+		function DefaultPartitionType()
+		{
+			//if (type=="mbr")
+				return 0x07;
+		}
+		
+		function DefaultFlags()
+		{
+			return [];
+		}
+		
+		var selected_elem = $(".selected"); 
+		var slave = $(".selected").parent().parent().pData("device-object");
+		var start = selected_elem.pData("start");
+		var end = selected_elem.pData("end");
+		var label = "test"; //temp
+
+		slave.PartitionCreate.async = false;
+		slave.PartitionCreate.onreply = function(path){console.log(path);};
+		slave.PartitionCreate.onerror = function(err,inf){console.log(err+" "+inf);};
+		slave.PartitionCreate(
+			start,
+			end-start,
+			"0x07",
+			label,
+			[],
+			[],
+			"ext3",
+			[]
+		);
+		
+
+	});	
+*/

@@ -6,7 +6,9 @@
 	<a href="#resize"><img id="resize-partition" src="graphics/move.png" width=32 height=32 class="inactive partition-selected button modify-action" title="Resize/move partition"></img></a>
 	<div style="display: inline-block; width: 32px;"></div>
 	<img id="set-partition" src="graphics/star.png" width=32 height=32 class="inactive partition-selected button" title="Set as Linvo partition"></img>
-
+	<div style="display: inline-block; width: 32px;"></div>
+	<img id="undo-button" src="graphics/back.png" width=32 height=32 class="button modify-action inactive" title="Undo action"></img>
+	<img id="redo-button" src="graphics/forward.png" width=32 height=32 class="button modify-action inactive" title="Redo action"></img>
 </div>
 
 <div id="manipulation-interface">
@@ -27,13 +29,23 @@
 
 
 <div id="manipulate-partitions-forms">
-	<!-- the fancybox forms -->
+	<!-- the forms used for the modify actions -->
+	<form id="add">
+		Select the type of the partition.
+		<button>Apply</button>
+		<button>Cancel</button>
+	</form>
+	
+	<form id="remove">
+		Removing this partition, you also erase all it's data.
+		<button>Apply</button>
+		<button>Cancel</button>
+	</form>
+	
 	<form id="resize">
+		You can resize or move this partition without modifying it's data.
 		<input id="offset-slider" type="range"  min="1" max="200" value="100"/>
 		<input id="size-slider" type="range" min=1 max=200 value=0/>
 	</form>
 	
-	<form id="remove">
-		<button>Apply</button>
-	</form>
 </div>
